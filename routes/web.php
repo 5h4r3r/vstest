@@ -14,9 +14,11 @@ use Illuminate\Support\Facades\DB;
 | contains the "web" middleware group. Now create something great!
 |
 */
-
-
-Route::get('zkh/pdf{id}', [ZKHController::class, 'pdf'])->name('zkh.pdf');
+Route::get('/', function () {
+    return redirect('/zkh');
+});
+Route::get('zkh/excel', [ZKHController::class, 'excel'])->name('zkh.excel');
+Route::get('zkh/pdf/{id}', [ZKHController::class, 'pdf'])->name('zkh.pdf');
 Route::resource('zkh', ZKHController::class);
 // Route::get('/', [ZKHController::class ,'index']);
 /**

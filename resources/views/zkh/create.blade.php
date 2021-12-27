@@ -3,11 +3,11 @@
 
 <div class="row">
     <div class="col-lg-12 margin-tb">
-        <div class="pull-left">
-            <h2>Add New Post</h2>
+        <div class="float-left">
+            <h2>Добавить запись</h2>
         </div>
-        <div class="pull-right">
-            <a class="btn btn-primary" href="{{ route('zkh.index') }}"> Back</a>
+        <div class="float-right">
+            <a class="btn btn-primary" href="{{ route('zkh.index') }}">Назад</a>
         </div>
     </div>
 </div>
@@ -29,25 +29,25 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Фамилия:</strong>
-                <input type="text" name="lastname" class="form-control" placeholder="Title">
+                <input type="text" name="lastname" class="form-control">
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Имя:</strong>
-                <input type="text" name="firstname" class="form-control" placeholder="Title">
+                <input type="text" name="firstname" class="form-control" >
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Отчество:</strong>
-                <input type="text" name="secondname" class="form-control" placeholder="Title">
+                <input type="text" name="secondname" class="form-control" >
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Задолжность:</strong>
-                <input type="text" name="debt" class="form-control" placeholder="Title">
+                <input type="text" name="debt" class="form-control">
             </div>
         </div>
 
@@ -59,7 +59,7 @@
         </div> -->
 
         <div class="col-xs-12 col-sm-12 col-md-12 text-center">
-                <button type="submit" class="btn btn-primary">Submit</button>
+                <button type="submit" class="btn btn-primary">Сохранить</button>
         </div>
     </div>
 </form>

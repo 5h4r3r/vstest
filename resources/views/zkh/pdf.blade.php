@@ -14,9 +14,6 @@
             <div class="pull-left">
                 <h2>Должник</h2>
             </div>
-            <div class="pull-right">
-                <a class="btn btn-primary" href="{{ route('zkh.index') }}">Назад</a>
-            </div>
         </div>
     </div>
 
@@ -24,31 +21,31 @@
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Фамилия:</strong>
-                {{ $post->lastname}}
+                {{ $entry->lastname}}
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Имя:</strong>
-                {{ $post->firstname}}
+                {{ $entry->firstname}}
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Отчество:</strong>
-                {{ $post->secondname}}
+                {{ $entry->secondname}}
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Задолжность:</strong>
-                {{ $post->debt}}
+                {{ $entry->debt}}
             </div>
         </div>
         <div class="col-xs-12 col-sm-12 col-md-12">
             <div class="form-group">
                 <strong>Пошлина:</strong>
-                {{ $post->statefee}}
+                {{ $entry->statefee}}
             </div>
         </div>
     </div>

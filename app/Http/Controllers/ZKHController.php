@@ -6,7 +6,9 @@ use App\Models\ZKH;
 use Illuminate\Http\Request;
 
 use PDF;
-
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\ExcelExport;
+use Illuminate\Support\Facades\Storage;
 
 class ZKHController extends Controller
 {
@@ -17,9 +19,8 @@ class ZKHController extends Controller
      */
     public function index()
     {
-        $posts = ZKH::all();
-
-        return view('zkh.index', compact('posts'));
+        $entries = ZKH::all();
+        return view('zkh.index', compact('entries'));
     }
 
     /**
@@ -33,7 +34,7 @@ class ZKHController extends Controller
     }
 
     /**
-     * Помещает созданный ресурс в хранилище
+     * Помещает созданный ресурс в хранилище, генерирует и сохраняет PDF
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
@@ -47,44 +48,43 @@ class ZKHController extends Controller
         ]);
 
         $request['statefee'] = ZKH::stateFee($request['debt']);
-
-        ZKH::create($request->all());
-
+        $model = ZKH::create($request->all());
+        $this->generatePdf($model->id);
         return redirect()->route('zkh.index')->with('success', 'Запись добавлена');
     }
 
     /**
      * Отображает указанный ресурс.
      *
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\ZKH  $entry
      * @return \Illuminate\Http\Response
      */
-    public function show($post)
+    public function show($entry)
     {
-        $post = ZKH::find($post);
-        return view('zkh.show', compact('post'));
+        $entry = ZKH::find($entry);
+        return view('zkh.show', compact('entry'));
     }
 
     /**
      * Выводит форму для редактирования указанного ресурса
      *
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\ZKH  $entry
      * @return \Illuminate\Http\Response
      */
-    public function edit($post)
+    public function edit($entry)
     {
-        $post = ZKH::find($post);
-        return view('zkh.edit', compact('post'));
+        $entry = ZKH::find($entry);
+        return view('zkh.edit', compact('entry'));
     }
 
     /**
-     * Обновляет указанный ресурс в хранилище
+     * Обновляет указанный ресурс в хранилище, генерирует и сохраняет PDF
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\ZKH  $entry
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $post)
+    public function update(Request $request, $entryid)
     {
         $request->validate([
             'lastname' => 'required',
@@ -92,34 +92,73 @@ class ZKHController extends Controller
             'secondname' => 'required',
         ]);
         $request['statefee'] = ZKH::stateFee($request['debt']);
-        $post = ZKH::find($post);
-        $post->update($request->all());
-
+        $entry = ZKH::find($entryid);
+        $entry->update($request->all());
+        $this->generatePdf($entryid);
         return redirect()->route('zkh.index')->with('success', 'Запись обновлена');
     }
 
     /**
-     * Удаляет указанный ресурс из хранилища
+     * Удаляет указанный ресурс из хранилища, удаляет PDF
      *
-     * @param  \App\Models\Post  $post
+     * @param  \App\Models\ZKH  $entry
      * @return \Illuminate\Http\Response
      */
-    public function destroy($post)
+    public function destroy($entryid)
     {
-        $post = ZKH::find($post);
-        $post->delete();
-
+        $entry = ZKH::find($entryid);
+        $entry->delete();
+        Storage::delete($this->getEntryPath($entryid));
         return redirect()->route('zkh.index')
             ->with('success', 'Запись удалена');
     }
-    public function pdf($post)
+    /**
+     * Отдает PDF на скачивание
+     * @param mixed $entryid
+     * 
+     * @return [type]
+     */
+    public function pdf($entryid)
     {
-        $post = ZKH::find($post);
+        $path = $this->getEntryPath($entryid);
+        if (!file_exists($path)) {
+            $this->generatePdf($entryid);
+        }
+        return Storage::download($path);
+        // return $pdf->download( 'list-'. $entry->id . '.pdf');
+    }
+    /**
+     * Генерирует и отдает таблицу Excel на скачивание
+     * @return [type]
+     */
+    public function excel()
+    {
+        $entry = ZKH::all();
+        return Excel::download(new ExcelExport, 'excel.xlsx');
+    }
 
-        $pdf = PDF::loadView('zkh.pdf',  compact('post'));
-
-
-
-        return $pdf->download( 'list-'. $post->id . '.pdf');
+    /**
+     * Генерирует и сохраняет PDF
+     * @param mixed $entryid
+     * 
+     * @return [type]
+     */
+    protected function generatePdf($entryid)
+    {
+        $entry = ZKH::find($entryid);
+        $pdf = PDF::loadView('zkh.pdf', compact('entry'));
+        $path = $this->getEntryPath($entryid);
+        $content = $pdf->download()->getOriginalContent();
+        Storage::put($path, $content);
+    }
+    /**
+     * Получает путь к PDF файлу
+     * @param mixed $entryid
+     * 
+     * @return [type]
+     */
+    protected function getEntryPath($entryid)
+    {
+        return "public/entry_" . $entryid . ".pdf";
     }
 }
